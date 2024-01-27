@@ -3,6 +3,7 @@ from .models import Events
 from .serializers import EventSerializer
 from django.shortcuts import render
 import folium
+from folium.plugins import FastMarkerCluster
 
 def index(request):
     events = Events.objects.all()
@@ -11,7 +12,11 @@ def index(request):
 
     for event in events:
         coordinates = (event.lat, event.lon)
-        folium.Marker(coordinates).add_to(m)
+        folium.Marker(coordinates, popup=event.title).add_to(m)
+
+    # latitudes = [event.lat for event in events]
+    # longitudes = [event.lon for event in events]
+    # FastMarkerCluster(data=list(zip(latitudes, longitudes))).add_to(m)
 
     context = {'map': m._repr_html_()}
     return render(request, 'index.html', context)
